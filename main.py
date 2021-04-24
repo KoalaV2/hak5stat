@@ -20,7 +20,7 @@ def getproductname():
         productname.append(i["name"])
     return(productname)
 
-def pineapple():
+def getstatus():
     productlist = getproductid()
     productname = getproductname()
 
@@ -36,7 +36,7 @@ def pineapple():
 
 def main():
     #getproductid()
-    pineapple()
+    getstatus()
 
 if __name__=="__main__":
     main()
