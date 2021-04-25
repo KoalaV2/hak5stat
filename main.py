@@ -20,19 +20,25 @@ def getproductname():
         productname.append(i["name"])
     return(productname)
 
+def get_pairs():
+    lst_of_pairs = []
+    for product in products['hak5_products']:
+        pair = (product['name'],product['id'])
+        lst_of_pairs.append(pair)
+    return lst_of_pairs
 def getstatus():
-    productlist = getproductid()
-    productname = getproductname()
+ 
+    for (name,id) in get_pairs():
+        print(f"{name} : {id}")
 
-    for i in productlist:
-        url = f'https://hak5.passportshipping.com/{i}'
-
+        url = f'https://hak5.passportshipping.com/{id}'
         response = requests.get(url)  # Makes a request to the url and downloads plain html
         soup = BeautifulSoup(response.text,"html.parser")
+
         status_div = soup.find_all("div", {"class": "message"})[0] # Finds the div which has the status info
         delivery_div = soup.find_all("div",{"class": "date range"} )
         print(delivery_div)
-        print(f"{productname}: {status_div}")
+        print(f"{name}: {status_div}")
 
 def main():
     #getproductid()
