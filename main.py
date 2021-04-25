@@ -1,34 +1,54 @@
 #!/usr/bin/env python3
+
+import json
 import requests
 from bs4 import BeautifulSoup
-import json
 
-with open("products.json") as f:
-    try:products = json.load(f)
-    except Exception as e: print(e)
+def get_pairs(productsInput):
+    return [(p['name'],p['id']) for p in productsInput['hak5_products']]
 
-def get_pairs():
-    lst_of_pairs = []
-    for product in products['hak5_products']:
-        pair = (product['name'],product['id'])
-        lst_of_pairs.append(pair)
-    return lst_of_pairs
+def getstatus(productsInput):
+    toReturn = []
+    for (product_name, product_id) in get_pairs(productsInput):
+        me = {
+            'name':product_name,
+            'id':product_id,
+            'delivery_status':None,
+            'estimated_delivery':None
+        }
 
-def getstatus():
- 
-    for (name,id) in get_pairs():
+        r = requests.get(f'https://hak5.passportshipping.com/{product_id}') # Makes a request to the url and downloads plain html
+        soup = BeautifulSoup(r.text, "html.parser") # Formats with Soup
 
-        url = f'https://hak5.passportshipping.com/{id}'
-        response = requests.get(url)  # Makes a request to the url and downloads plain html
-        soup = BeautifulSoup(response.text,"html.parser")
+        try: # Gets the "Status update" part and formats it
+            me['delivery_status'] = soup.find("div", {"class": "message"}).text.split("\n")[1].lstrip(' ')
+        except:pass
 
-        status_div = soup.find_all("div", {"class": "message"})[0] # Finds the div which has the status info
-        delivery_div = soup.find_all("div",{"class": "date range"} )
-        print(f"{name} : {delivery_div}")
-        print(f"{name}: {status_div}")
+        try: # Grabs the estimated time (which is 2 parts) and then gets the data and formats it
+            me['estimated_delivery'] = " - ".join([x.text.split("\n")[1].lstrip(' ') for x in soup.find_all("div", {"class": "date range"})])
+            if me['estimated_delivery'] == "":
+                me['estimated_delivery'] = None
+        except:pass
 
-def main():
-    getstatus()
+        toReturn.append(me)
+    return toReturn
 
 if __name__=="__main__":
-    main()
+    # Loads JSON file with the products
+    with open("products.json") as f:
+        products = json.load(f)
+
+    print("Loading products...")
+
+    for x in getstatus(products):
+        print(f'\n"{x["name"]}" (ID : {x["id"]}):')
+
+        if x["delivery_status"] == None:
+            print("Delivery status not found")
+        else:
+            print(f'Delivery status : {x["delivery_status"]}')
+
+        if x["estimated_delivery"] == None:
+            print("Estimated delivery not found")
+        else:
+            print(f'Estimated delivery : {x["estimated_delivery"]}')
