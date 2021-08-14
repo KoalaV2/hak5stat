@@ -21,7 +21,7 @@ def getstatus(productsInput):
         soup = BeautifulSoup(r.text, "html.parser") # Formats with Soup
 
         try: # Gets the "Status update" part and formats it
-            me['delivery_status'] = soup.find("div", {"class": "message"}).text.split("\n")[1].lstrip(' ')
+            me['delivery_status'] = soup.find("div", {"class": "message"}).text.split("\n")[2].lstrip(' ')
         except:pass
 
         try: # Grabs the estimated time (which is 2 parts) and then gets the data and formats it
