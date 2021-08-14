@@ -38,17 +38,17 @@ if __name__=="__main__":
     with open("products.json") as f:
         products = json.load(f)
 
-    print("Loading products...")
+    print("[*] Loading products...")
 
     for x in getstatus(products):
-        print(f'\n"{x["name"]}" (ID : {x["id"]}):')
+        print(f'\n"{x["name"]}" (ID: {x["id"]}):')
 
         if x["delivery_status"] == None:
             print("Delivery status not found")
         else:
-            print(f'Delivery status : {x["delivery_status"]}')
+            print(f'Delivery status: {x["delivery_status"]}')
 
         if x["estimated_delivery"] == None:
             print("Estimated delivery not found")
         else:
-            print(f'Estimated delivery : {x["estimated_delivery"]}')
+            print(f'Estimated delivery: {x["estimated_delivery"]}')
