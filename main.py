@@ -3,6 +3,7 @@
 import json
 import requests
 from bs4 import BeautifulSoup
+session = requests.Session()
 
 def get_pairs(productsInput):
     return [(p['name'],p['id']) for p in productsInput['hak5_products']]
@@ -17,7 +18,7 @@ def getstatus(productsInput):
             'estimated_delivery':None
         }
 
-        r = requests.get(f'https://hak5.passportshipping.com/{product_id}') # Makes a request to the url and downloads plain html
+        r = session.get(f'https://hak5.passportshipping.com/{product_id}') # Makes a request to the url and downloads plain html
         soup = BeautifulSoup(r.text, "html.parser") # Formats with Soup
 
         try: # Gets the "Status update" part and formats it
